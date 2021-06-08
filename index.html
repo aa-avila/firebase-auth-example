@@ -22,24 +22,67 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <!-- <li class="nav-item active">
-                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                     </li> -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Ingresar</a>
+                    <li class="nav-item" id="login">
+                        <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">Ingresar</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="signup">
                         <a class="nav-link" href="#" data-toggle="modal" data-target="#signupModal">Registrarse</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Salir</a>
+                        <a class="nav-link" href="#" id="logout">Salir</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Modal -->
+    <!-- MAIN CONTENT -->
+    <div class="container p-4">
+        <div class="col-md-6 offset-md-3">
+            <ul class="list-group notes">
+                <!-- <li class="list-group-item">
+                    <h5>title</h5>
+                    <p>Lorem ipsum dolor sit amet.</p>
+                </li> -->
+            </ul>
+        </div>
+    </div>
+
+
+    <!-- Modal LogIn-->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Ingresar</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="" id="login-form">
+                        <div class="form-group">
+                            <input type="text" id="login-email" class="form-control" 
+                            placeholder="Usuari@" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="login-password" class="form-control" 
+                            placeholder="Clave" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            Ingresar con Email
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-block" id="googleLogin">
+                            Ingresar con Google
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal SignUp-->
     <div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="signupModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -85,6 +128,7 @@
     <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
      <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
 
     <script>
         // Your web app's Firebase configuration
@@ -99,11 +143,11 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const fs = firebase.firestore();
     </script>
 
     <!-- MAIN SCRIPT -->
     <script src="./main.js"></script>
 
 </body>
-
 </html>

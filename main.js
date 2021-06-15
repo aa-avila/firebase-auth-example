@@ -98,14 +98,14 @@ logout.addEventListener('click', e => {
 const notesList = document.querySelector('.notes');
 
 const showNotes = data => {
+    let html = '';
+    html += `
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newNoteModal">
+                Nueva Nota
+            </button>
+            <br/>
+        `
     if (data.length) {
-        let html = '';
-        html += `
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newNoteModal">
-                    Nueva Nota
-                </button>
-                <br/>
-            `
         data.forEach(doc => {
             const note = doc.data();
             const li = `
@@ -118,7 +118,8 @@ const showNotes = data => {
         });
         notesList.innerHTML = html;
     } else {
-        notesList.innerHTML = '<p>No hay notas para mostrar.</p>';
+        html += '<p>No hay notas para mostrar.</p>';
+        notesList.innerHTML = html;
     }
 }
 

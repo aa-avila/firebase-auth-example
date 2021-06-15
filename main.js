@@ -1,3 +1,4 @@
+/***********************************************************************/
 // LOGIN
 const loginForm = document.querySelector('#login-form');
 
@@ -26,7 +27,8 @@ googleBtn.addEventListener('click', () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
         .then(result => {
-            console.log(result);
+            //console.log(result);
+
             // Limpia el formulario
             loginForm.reset();
             // Cerrar (ocultar) el modal
@@ -37,6 +39,26 @@ googleBtn.addEventListener('click', () => {
         })
 });
 
+// Facebook Login
+const facebookBtn = document.querySelector('#facebookLogin');
+facebookBtn.addEventListener('click', () => {
+    console.log('facebook click');
+    const provider = new firebase.auth.FacebookAuthProvider();
+    auth.signInWithPopup(provider)
+        .then(result => {
+            //console.log(result);
+
+            // Limpia el formulario
+            loginForm.reset();
+            // Cerrar (ocultar) el modal
+            $('#loginModal').modal('hide');
+        })
+        .catch(err => {
+            console.log(err);
+        })
+});
+
+/***********************************************************************/
 // SIGNUP
 const signupForm = document.querySelector('#signup-form');
 
@@ -59,6 +81,7 @@ signupForm.addEventListener('submit', e => {
         });
 });
 
+/***********************************************************************/
 // LOGOUT
 const logout = document.querySelector('#logout');
 
@@ -70,13 +93,19 @@ logout.addEventListener('click', e => {
     });
 });
 
-
+/***********************************************************************/
 // NOTES
 const notesList = document.querySelector('.notes');
 
 const showNotes = data => {
     if (data.length) {
         let html = '';
+        html += `
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newNoteModal">
+                    Nueva Nota
+                </button>
+                <br/>
+            `
         data.forEach(doc => {
             const note = doc.data();
             const li = `
@@ -93,15 +122,18 @@ const showNotes = data => {
     }
 }
 
+/***********************************************************************/
 // AUTH EVENTS
+let currentUser;
 const login = document.querySelector('#login');
 const signup = document.querySelector('#signup');
 
-
 auth.onAuthStateChanged(user => {
     if (user) {
+        currentUser = user;
         console.log('auth: signin');
-        fs.collection('notes')
+        console.log(user.uid);
+        fs.collection('users/' + user.uid + '/notes')
             .get()
             .then((snapshot) => {
                 console.log(snapshot.docs);
@@ -121,5 +153,43 @@ auth.onAuthStateChanged(user => {
 
         // Borra notas y muestra msj
         notesList.innerHTML = '<p>No estás logueado. Inicia sesión para ver tus notas.</p>';
+    }
+});
+
+/***********************************************************************/
+// NEW NOTE FORM
+const newNoteForm = document.querySelector('#newNote-form');
+
+newNoteForm.addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const newNoteTitle = document.querySelector('#newNote-title').value;
+    const newNoteText = document.querySelector('#newNote-text').value;
+
+    console.log(newNoteTitle, newNoteText);
+
+    try {
+        // Agregar nota a BD
+        await fs.collection('users/' + currentUser.uid + '/notes').add({
+            title: newNoteTitle,
+            text: newNoteText
+        });
+        console.log("new note added");
+
+        // Limpia el formulario
+        newNoteForm.reset();
+
+        // Cerrar (ocultar) el modal
+        $('#newNoteModal').modal('hide');
+
+        // Actualizar lista de notas desde BD
+        const notesRef = await fs.collection('users/' + currentUser.uid + '/notes');
+        notesRef.get()
+            .then((snapshot) => {
+                console.log(snapshot.docs);
+                showNotes(snapshot.docs);
+            });
+    } catch (error) {
+        console.error(error);
     }
 });

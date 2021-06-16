@@ -13,10 +13,11 @@ loginForm.addEventListener('submit', e => {
         .then(userCredential => {
             // Limpia el formulario
             loginForm.reset();
+
             // Cerrar (ocultar) el modal
             $('#loginModal').modal('hide');
 
-            console.log('login ok');
+            //console.log('login ok');
         });
 });
 
@@ -31,6 +32,7 @@ googleBtn.addEventListener('click', () => {
 
             // Limpia el formulario
             loginForm.reset();
+
             // Cerrar (ocultar) el modal
             $('#loginModal').modal('hide');
         })
@@ -50,6 +52,7 @@ facebookBtn.addEventListener('click', () => {
 
             // Limpia el formulario
             loginForm.reset();
+
             // Cerrar (ocultar) el modal
             $('#loginModal').modal('hide');
         })
@@ -77,7 +80,7 @@ signupForm.addEventListener('submit', e => {
             // Cerrar (ocultar) el modal
             $('#signupModal').modal('hide');
 
-            console.log('signup ok');
+            //console.log('signup ok');
         });
 });
 
@@ -100,18 +103,22 @@ const notesList = document.querySelector('.notes');
 const showNotes = data => {
     let html = '';
     html += `
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newNoteModal">
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#newNoteModal">
                 Nueva Nota
             </button>
             <br/>
         `
     if (data.length) {
         data.forEach(doc => {
+            const noteId = doc.id;
             const note = doc.data();
             const li = `
-                <li class="list-group-item">
+                <li class="list-group-item mt-2 border border-secondary rounded">
                     <h5>${note.title}</h5>
                     <p>${note.text}</p>
+                    <button type="button" class="btn btn-danger" onclick="handleDelete('${noteId}')">
+                        Borrar
+                    </button>
                 </li>
             `;
             html += li;
@@ -132,12 +139,14 @@ const signup = document.querySelector('#signup');
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUser = user;
-        console.log('auth: signin');
-        console.log(user.uid);
+
+        //console.log('auth: signin');
+        //console.log(user.uid);
+
         fs.collection('users/' + user.uid + '/notes')
             .get()
             .then((snapshot) => {
-                console.log(snapshot.docs);
+                //console.log(snapshot.docs);
                 showNotes(snapshot.docs);
             });
 
@@ -146,7 +155,8 @@ auth.onAuthStateChanged(user => {
         signup.style.display = "none";
         logout.style.display = "block";
     } else {
-        console.log('auth: signout');
+        //console.log('auth: signout');
+
         // Actualiza estilo display de enlaces navbar
         login.style.display = "block";
         signup.style.display = "block";
@@ -167,7 +177,7 @@ newNoteForm.addEventListener('submit', async e => {
     const newNoteTitle = document.querySelector('#newNote-title').value;
     const newNoteText = document.querySelector('#newNote-text').value;
 
-    console.log(newNoteTitle, newNoteText);
+    //console.log(newNoteTitle, newNoteText);
 
     try {
         // Agregar nota a BD
@@ -175,7 +185,7 @@ newNoteForm.addEventListener('submit', async e => {
             title: newNoteTitle,
             text: newNoteText
         });
-        console.log("new note added");
+        //console.log("new note added");
 
         // Limpia el formulario
         newNoteForm.reset();
@@ -187,10 +197,31 @@ newNoteForm.addEventListener('submit', async e => {
         const notesRef = await fs.collection('users/' + currentUser.uid + '/notes');
         notesRef.get()
             .then((snapshot) => {
-                console.log(snapshot.docs);
+                //console.log(snapshot.docs);
                 showNotes(snapshot.docs);
             });
     } catch (error) {
         console.error(error);
     }
 });
+
+// Eliminar nota
+const handleDelete = async (noteId) => {
+    try {
+        // Borrar nota de BD
+        await fs.collection('users/' + currentUser.uid + '/notes').doc(noteId).delete();
+
+        //console.log("note deleted");
+
+        // Actualizar lista de notas desde BD
+        const notesRef = await fs.collection('users/' + currentUser.uid + '/notes');
+        notesRef.get()
+            .then((snapshot) => {
+                //console.log(snapshot.docs);
+                showNotes(snapshot.docs);
+            });
+    } catch (error) {
+        console.error(error);
+    }
+
+}

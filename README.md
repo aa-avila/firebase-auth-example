@@ -1,5 +1,5 @@
 # firebase-auth-example
-###Ejemplo de autenticación mediante el servicio de Firebase Authentication
+### Ejemplo de autenticación mediante el servicio de Firebase Authentication
 
 - Permite crear cuentas e ingresar mediante correo y contraseña, y también mediante Google y Facebook.
 
